@@ -275,7 +275,7 @@ func (t *Task) createDirs() {
 	os.MkdirAll(t.TempDir(), 0777)
 	for _, oip := range t.OutIPs {
 		oipDir := oip.TempDir() // This will create all out dirs, including the temp dir
-		if oip.doStream {       // Temp dirs are not created for fifo files
+		if oip.doStream { // Temp dirs are not created for fifo files
 			oipDir = filepath.Dir(oip.FifoPath())
 		} else {
 			oipDir = t.TempDir() + "/" + oipDir
@@ -343,7 +343,8 @@ func FinalizeIPs(tempExecDir string, ips ...*FileIP) {
 	for _, oip := range ips {
 		// Move paths for ports, to final destinations
 		if !oip.doStream {
-			os.Rename(tempExecDir+"/"+oip.TempPath(), oip.Path())
+			err := os.Rename(tempExecDir+"/"+oip.TempPath(), oip.Path())
+			CheckWithMsg(err, "Could not rename files in temp dir "+tempExecDir)
 		}
 	}
 	// For remaining paths in temporary execution dir, just move out of it
@@ -353,7 +354,9 @@ func FinalizeIPs(tempExecDir string, ips ...*FileIP) {
 			newPath = strings.Replace(newPath, "/", "/", 1)
 			newPathDir := filepath.Dir(newPath)
 			if _, err := os.Stat(newPathDir); os.IsNotExist(err) {
-				os.MkdirAll(newPathDir, 0777)
+				err := os.MkdirAll(newPathDir, 0777)
+				CheckWithMsg(err, "Could not create folders in temp dir "+tempExecDir)
+
 			}
 			Debug.Println("Moving: ", tempPath, " -> ", newPath)
 			renameErr := os.Rename(tempPath, newPath)
