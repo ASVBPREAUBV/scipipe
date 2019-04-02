@@ -337,7 +337,7 @@ func (t *Task) atomizeIPs() {
 }
 
 // AtomizeIPs renames temporary output files/directories to their proper paths.
-// It is called both from Task, and from Process that implement cutom execution
+// It is called both from Task, and from Process that implement custom execution
 // schedule.
 func AtomizeIPs(tempExecDir string, ips ...*FileIP) {
 	for _, oip := range ips {
@@ -350,7 +350,7 @@ func AtomizeIPs(tempExecDir string, ips ...*FileIP) {
 	filepath.Walk(tempExecDir, func(tempPath string, fileInfo os.FileInfo, err error) error {
 		if !fileInfo.IsDir() {
 			newPath := strings.Replace(tempPath, tempExecDir+"/", "", 1)
-			newPath = strings.Replace(newPath, FSRootPlaceHolder+"/", "/", 1)
+			newPath = strings.Replace(newPath, "/", "/", 1)
 			newPathDir := filepath.Dir(newPath)
 			if _, err := os.Stat(newPathDir); os.IsNotExist(err) {
 				os.MkdirAll(newPathDir, 0777)

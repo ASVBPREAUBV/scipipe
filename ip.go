@@ -120,14 +120,11 @@ func (ip *FileIP) TempDir() string {
 // TempPath returns the temporary path of the physical file
 func (ip *FileIP) TempPath() string {
 	if ip.path[0] == '/' {
-		return FSRootPlaceHolder + ip.path
+		return ip.path
 	}
 	return ip.path
 }
 
-// FSRootPlaceHolder is a string to use instead of an initial '/', to indicate
-// a path that belongs to the absolute root
-const FSRootPlaceHolder = "__fsroot__"
 
 // FifoPath returns the path to use when a FIFO file is used instead of a
 // normal file
