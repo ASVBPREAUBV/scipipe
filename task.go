@@ -333,13 +333,13 @@ func (t *Task) atomizeIPs() {
 	for _, ip := range t.OutIPs {
 		outIPs = append(outIPs, ip)
 	}
-	AtomizeIPs(t.TempDir(), outIPs...)
+	FinalizeIPs(t.TempDir(), outIPs...)
 }
 
-// AtomizeIPs renames temporary output files/directories to their proper paths.
+// FinalizeIPs renames temporary output files/directories to their proper paths.
 // It is called both from Task, and from Process that implement custom execution
 // schedule.
-func AtomizeIPs(tempExecDir string, ips ...*FileIP) {
+func FinalizeIPs(tempExecDir string, ips ...*FileIP) {
 	for _, oip := range ips {
 		// Move paths for ports, to final destinations
 		if !oip.doStream {
@@ -347,7 +347,7 @@ func AtomizeIPs(tempExecDir string, ips ...*FileIP) {
 		}
 	}
 	// For remaining paths in temporary execution dir, just move out of it
-	filepath.Walk(tempExecDir, func(tempPath string, fileInfo os.FileInfo, err error) error {
+	err := filepath.Walk(tempExecDir, func(tempPath string, fileInfo os.FileInfo, err error) error {
 		if !fileInfo.IsDir() {
 			newPath := strings.Replace(tempPath, tempExecDir+"/", "", 1)
 			newPath = strings.Replace(newPath, "/", "/", 1)
@@ -361,6 +361,7 @@ func AtomizeIPs(tempExecDir string, ips ...*FileIP) {
 		}
 		return err
 	})
+	CheckWithMsg(err, "Could not move files in temp dir "+tempExecDir)
 	// Remove temporary execution dir (but not for absolute paths, or current dir)
 	if tempExecDir != "" && tempExecDir != "." && tempExecDir[0] != '/' {
 		remErr := os.RemoveAll(tempExecDir)
