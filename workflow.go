@@ -37,7 +37,7 @@ type Workflow struct {
 	PlotConf          WorkflowPlotConf
 }
 
-// WorkflowPlotConf contains configuraiton for plotting the workflow as a graph
+// WorkflowPlotConf contains configuration for plotting the workflow as a graph
 // with graphviz
 type WorkflowPlotConf struct {
 	EdgeLabels bool
@@ -59,7 +59,7 @@ type WorkflowProcess interface {
 // ----------------------------------------------------------------------------
 
 // NewWorkflowWithPath returns a new Workflow, the workflowPath defines the directory in which all files of this workflow, even temporary files will be created
-func NewWorkflowWithPath(name string, maxConcurrentTasks int, workflowPath string) *Workflow {
+func NewWorkflowWithLogPath(name string, maxConcurrentTasks int, workflowPath string) *Workflow {
 	wf := newWorkflowWithoutLogging(name, maxConcurrentTasks)
 
 	// Set up logging
